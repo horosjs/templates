@@ -5,11 +5,10 @@ import { getCookie } from "horos/cookies";
 import React from "react";
 import keys from "@/keys.js";
 
-const app = new Horos();
+const app = new Horos({ basePath: "/" });
 
 // Middleware applied to every route. Logs and adds user info to context
 app.use("*", (req, context, next) => {
-
   console.log("Global middleware");
   // Handling CORS preflight requests
   if (req.method.toUpperCase() === "OPTIONS") {
@@ -21,10 +20,9 @@ app.use("*", (req, context, next) => {
   return next();
 });
 
-
 // Route returning context.user data
 app.get("/", async (request, context) => {
-  const { Welcome } = await import('@/views/welcome');
+  const { Welcome } = await import("@/views/welcome");
   return app.render(Welcome);
 });
 
@@ -32,7 +30,6 @@ app.get("/", async (request, context) => {
 app.get("/context", async (request, context) => {
   return new Response(JSON.stringify(context.user));
 });
-
 
 // Middleware for specific route. Logs only if request ends with 'turso'
 app.use("*", async (req, context, next) => {
@@ -117,12 +114,12 @@ app.onNotFound((err) => {
 
 // Custom Error handler for the route '/broke'
 app.get("/broke", async (request, context) => {
-  throw new Error('custom error message')
+  throw new Error("custom error message");
 });
 
 // Global error handler
 app.onError((err) => {
-  console.log('Global Error Handler:', err);
+  console.log("Global Error Handler:", err);
 });
 
 app.listen("fetch"); // Starts the Horos app
